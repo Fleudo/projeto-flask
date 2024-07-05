@@ -45,4 +45,5 @@ def verify(associate_id):
         return render_template('index.html', error='Pessoa inexistente na base de dados do clube')
 
 if __name__ == '__main__':
+    print("Starting Flask application..."
     app.run(debug=True)
