@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carteirinha do Associado</title>
+</head>
+<body>
+    {% if associate %}
+        <h1>Carteirinha do Associado</h1>
+        <p><strong>Nome:</strong> {{ associate.name }}</p>
+        <p><strong>CPF:</strong> {{ associate.cpf }}</p>
+        <p><strong>Modelo do Carro:</strong> {{ associate.car_model }}</p>
+        <p><strong>Versão:</strong> {{ associate.car_version }}</p>
+        <p><strong>Ano Modelo:</strong> {{ associate.car_year }}</p>
+        <p><strong>Email:</strong> {{ associate.email }}</p>
+        <p><strong>Telefone:</strong> {{ associate.phone }}</p>
+        <img src="data:image/png;base64,{{ qr_img }}" alt="QR Code">
+    {% else %}
+        <p>{{ error }}</p>
+    {% endif %}
+</body>
+</html>

@@ -1,7 +1,12 @@
-# Forçando um novo commit para o Render
 from flask import Flask, request, jsonify, render_template
 import requests
 import os
+import qrcode
+from io import BytesIO
+from base64 import b64encode
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -34,6 +39,20 @@ def verify(associate_id):
         return render_template('index.html', associate=associate['attributes'])
     else:
         return render_template('index.html', error='Pessoa inexistente na base de dados do clube')
+
+@app.route('/carteirinha/<int:associate_id>', methods=['GET'])
+def carteirinha(associate_id):
+    token = os.getenv("API_TOKEN")
+    associate = fetch_associate_by_id(token, associate_id)
+    if associate:
+        qr_data = f"Nome: {associate['attributes']['name']}\nCPF: {associate['attributes']['cpf']}\nModelo do Carro: {associate['attributes']['car_model']}"
+        qr = qrcode.make(qr_data)
+        buffer = BytesIO()
+        qr.save(buffer, format="PNG")
+        qr_img = b64encode(buffer.getvalue()).decode('utf-8')
+        return render_template('carteirinha.html', associate=associate['attributes'], qr_img=qr_img)
+    else:
+        return render_template('carteirinha.html', error='Pessoa inexistente na base de dados do clube')
 
 if __name__ == '__main__':
     app.run(debug=True)
