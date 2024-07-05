@@ -36,9 +36,9 @@ def verify(associate_id):
     if associate:
         qr = qrcode.make(f"ID: {associate_id}, Nome: {associate['attributes']['name']}, CPF: {associate['attributes']['cpf']}")
         qr.save('static/qr.png')
-        return render_template('index.html', associate=associate['attributes'])
+        return render_template('carteirinha.html', associate=associate['attributes'])
     else:
-        return render_template('index.html', error='Pessoa inexistente na base de dados do clube')
+        return render_template('carteirinha.html', error='Pessoa inexistente na base de dados do clube')
 
 if __name__ == '__main__':
     app.run(debug=True)
