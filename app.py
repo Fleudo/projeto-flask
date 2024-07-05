@@ -44,15 +44,19 @@ def carteirinha(associate_id):
     token = os.getenv("API_TOKEN")
     associate = fetch_associate_by_id(token, associate_id)
     if associate:
-        qr_data = f"Nome: {associate['attributes'].get('name', 'N/A')}\nCPF: {associate['attributes'].get('cpf', 'N/A')}\nModelo do Carro: {associate['attributes'].get('car_model', 'N/A')}\nVersão: {associate['attributes'].get('car_version', 'N/A')}\nAno Modelo: {associate['attributes'].get('car_year_model', 'N/A')}\nEmail: {associate['attributes'].get('email', 'N/A')}\nTelefone: {associate['attributes'].get('phone', 'N/A')}"
-        qr = qrcode.make(qr_data)
-        qr_io = BytesIO()
-        qr.save(qr_io, 'PNG')
-        qr_io.seek(0)
-        qr_code_url = url_for('static', filename='qr_code.png')
-        with open(os.path.join(app.static_folder, 'qr_code.png'), 'wb') as f:
-            f.write(qr_io.getvalue())
-        return render_template('carteirinha.html', associate=associate['attributes'], qr_code_url=qr_code_url)
+        try:
+            qr_data = f"Nome: {associate['attributes'].get('name', 'N/A')}\nCPF: {associate['attributes'].get('cpf', 'N/A')}\nModelo do Carro: {associate['attributes'].get('car_model', 'N/A')}\nVersão: {associate['attributes'].get('car_version', 'N/A')}\nAno Modelo: {associate['attributes'].get('car_year_model', 'N/A')}\nEmail: {associate['attributes'].get('email', 'N/A')}\nTelefone: {associate['attributes'].get('phone', 'N/A')}"
+            qr = qrcode.make(qr_data)
+            qr_io = BytesIO()
+            qr.save(qr_io, 'PNG')
+            qr_io.seek(0)
+            qr_code_url = url_for('static', filename='qr_code.png')
+            with open(os.path.join(app.static_folder, 'qr_code.png'), 'wb') as f:
+                f.write(qr_io.getvalue())
+            return render_template('carteirinha.html', associate=associate['attributes'], qr_code_url=qr_code_url)
+        except Exception as e:
+            print(f"Error generating QR code or rendering template: {e}")
+            return "Internal Server Error", 500
     else:
         return "Pessoa inexistente na base de dados do clube", 404
 
