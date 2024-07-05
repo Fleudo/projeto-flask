@@ -1,6 +1,10 @@
 from flask import Flask, request, jsonify, render_template
 import requests
 import os
+from dotenv import load_dotenv
+
+# Carregar as variáveis de ambiente do arquivo .env
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -16,7 +20,7 @@ def fetch_associate_by_id(token, associate_id):
     response = requests.get(f"{data_url}/{associate_id}", headers=headers)
     print(f"Response status code: {response.status_code}")  # Debugging
     print(f"Response text: {response.text}")  # Debugging
-
+    
     if response.status_code == 200:
         try:
             data = response.json()
