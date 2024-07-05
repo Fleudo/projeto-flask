@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify, render_template
 import requests
 import os
 import qrcode
+from io import BytesIO
+from base64 import b64encode
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -34,9 +36,21 @@ def verify(associate_id):
     token = os.getenv("API_TOKEN")
     associate = fetch_associate_by_id(token, associate_id)
     if associate:
-        qr = qrcode.make(f"ID: {associate_id}, Nome: {associate['attributes']['name']}, CPF: {associate['attributes']['cpf']}")
-        qr.save('static/qr.png')
-        return render_template('carteirinha.html', associate=associate['attributes'])
+        return render_template('index.html', associate=associate['attributes'])
+    else:
+        return render_template('index.html', error='Pessoa inexistente na base de dados do clube')
+
+@app.route('/carteirinha/<int:associate_id>', methods=['GET'])
+def carteirinha(associate_id):
+    token = os.getenv("API_TOKEN")
+    associate = fetch_associate_by_id(token, associate_id)
+    if associate:
+        qr_data = f"Nome: {associate['attributes']['name']}\nCPF: {associate['attributes']['cpf']}\nModelo do Carro: {associate['attributes']['car_model']}"
+        qr = qrcode.make(qr_data)
+        buffer = BytesIO()
+        qr.save(buffer, format="PNG")
+        qr_img = b64encode(buffer.getvalue()).decode('utf-8')
+        return render_template('carteirinha.html', associate=associate['attributes'], qr_img=qr_img)
     else:
         return render_template('carteirinha.html', error='Pessoa inexistente na base de dados do clube')
 
