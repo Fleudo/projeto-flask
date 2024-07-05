@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carteirinha do Associado</title>
+</head>
+<body>
+    <h1>Carteirinha do Associado</h1>
+    {% if associate %}
+        <p>Nome: {{ associate.name }}</p>
+        <p>CPF: {{ associate.cpf }}</p>
+        <p>Modelo do Carro: {{ associate.car_model }}</p>
+        <p>Versão: {{ associate.car_version }}</p>
+        <p>Ano Modelo: {{ associate.car_year }}</p>
+        <p>Email: {{ associate.email }}</p>
+        <p>Telefone: {{ associate.phone }}</p>
+        <img src="{{ url_for('static', filename='qr.png') }}" alt="QR Code">
+    {% elif error %}
+        <p>{{ error }}</p>
+    {% endif %}
+</body>
+</html>
