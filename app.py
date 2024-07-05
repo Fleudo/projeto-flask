@@ -3,10 +3,10 @@ import requests
 import os
 from dotenv import load_dotenv
 
-# Carregar as variáveis de ambiente do arquivo .env
-load_dotenv()
-
 app = Flask(__name__)
+
+# Carregar variáveis de ambiente do arquivo .env
+load_dotenv()
 
 data_url = "https://api.gwmcarclub.com.br/api/associates"
 
@@ -37,7 +37,6 @@ def fetch_associate_by_id(token, associate_id):
 @app.route('/verify/<int:associate_id>', methods=['GET'])
 def verify(associate_id):
     token = os.getenv("API_TOKEN")
-    print(f"Token: {token}")  # Debugging
     associate = fetch_associate_by_id(token, associate_id)
     if associate:
         return render_template('index.html', associate=associate['attributes'])
@@ -45,5 +44,5 @@ def verify(associate_id):
         return render_template('index.html', error='Pessoa inexistente na base de dados do clube')
 
 if __name__ == '__main__':
-    print("Starting Flask application..."
+    print("Starting Flask application...")
     app.run(debug=True)
