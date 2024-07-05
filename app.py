@@ -50,9 +50,13 @@ def carteirinha(associate_id):
             qr_io = BytesIO()
             qr.save(qr_io, 'PNG')
             qr_io.seek(0)
-            qr_code_url = url_for('static', filename='qr_code.png')
-            with open(os.path.join(app.static_folder, 'qr_code.png'), 'wb') as f:
+
+            # Caminho para salvar o QR code
+            qr_code_path = os.path.join(app.static_folder, 'qr_code.png')
+            with open(qr_code_path, 'wb') as f:
                 f.write(qr_io.getvalue())
+
+            qr_code_url = url_for('static', filename='qr_code.png')
             return render_template('carteirinha.html', associate=associate['attributes'], qr_code_url=qr_code_url)
         except Exception as e:
             print(f"Error generating QR code or rendering template: {e}")
