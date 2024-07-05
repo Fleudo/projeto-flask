@@ -1,3 +1,4 @@
+# Forçando um novo commit para o Render
 from flask import Flask, request, jsonify, render_template
 import requests
 import os
