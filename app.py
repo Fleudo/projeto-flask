@@ -1,10 +1,9 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, send_file, url_for
 import requests
 import os
 import qrcode
 from dotenv import load_dotenv
 from io import BytesIO
-from flask import send_file
 
 app = Flask(__name__)
 
@@ -17,17 +16,12 @@ def fetch_associate_by_id(token, associate_id):
         'Authorization': f'Bearer {token}',
         'Content-Type': 'application/json'
     }
-    print(f"Token: {token}")  # Debugging
-    print(f"Fetching associate with ID: {associate_id}")  # Debugging
     response = requests.get(f"{data_url}/{associate_id}", headers=headers)
-    print(f"Response status code: {response.status_code}")  # Debugging
-    print(f"Response text: {response.text}")  # Debugging
     
     if response.status_code == 200:
         try:
             data = response.json()
             if 'data' in data:
-                print(f"Data found: {data['data']}")  # Debugging
                 return data['data']
             else:
                 return None
@@ -55,7 +49,10 @@ def carteirinha(associate_id):
         qr_io = BytesIO()
         qr.save(qr_io, 'PNG')
         qr_io.seek(0)
-        return send_file(qr_io, mimetype='image/png')
+        qr_code_url = url_for('static', filename='qr_code.png')
+        with open(os.path.join(app.static_folder, 'qr_code.png'), 'wb') as f:
+            f.write(qr_io.getvalue())
+        return render_template('carteirinha.html', associate=associate['attributes'], qr_code_url=qr_code_url)
     else:
         return "Pessoa inexistente na base de dados do clube", 404
 
