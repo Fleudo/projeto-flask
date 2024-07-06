@@ -1,90 +1,97 @@
-from flask import Flask, render_template, send_file
+from flask import Flask, jsonify, send_file, render_template
 import qrcode
+from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
-import os
 import requests
+import json
 
 app = Flask(__name__)
-
-data_url = "https://api.gwmcarclub.com.br/api/associates"
 
 @app.route('/carteirinha/<int:associate_id>', methods=['GET'])
 def carteirinha(associate_id):
     try:
-        token = os.getenv("API_TOKEN")
-        headers = {
-            'Authorization': f'Bearer {token}',
-            'Content-Type': 'application/json'
-        }
-        response = requests.get(f"{data_url}/{associate_id}", headers=headers)
-        response.raise_for_status()
-        data = response.json()
+        response = requests.get(f'https://api.example.com/associates/{associate_id}')
+        response_data = response.json()
+        
+        if response.status_code != 200 or 'data' not in response_data:
+            return "Erro ao obter dados do associado", 404
 
-        associate = data.get('data', {}).get('attributes', {})
-        nome = associate.get('nome', 'N/A')
-        cpf = associate.get('cpf', 'N/A')
-        carro_modelo = associate.get('carro_modelo', 'N/A')
-        carro_versao = associate.get('carro_versao', 'N/A')
-        carro_anomodelo = associate.get('carro_anomodelo', 'N/A')
-        email = associate.get('email', 'N/A')
-        telefone = associate.get('telefone', 'N/A')
+        associate = response_data['data']['attributes']
+        qr_data = json.dumps({
+            "Nome": associate.get('nome', 'N/A'),
+            "Número do Sócio": associate_id,
+            "CPF": associate.get('cpf', 'N/A'),
+            "Modelo do Carro": associate.get('carro_modelo', 'N/A'),
+            "Versão": associate.get('carro_versao', 'N/A'),
+            "Ano Modelo": associate.get('carro_anomodelo', 'N/A'),
+            "Email": associate.get('email', 'N/A'),
+            "Telefone": associate.get('telefone', 'N/A')
+        })
 
-        qr_data = {
-            "Nome": nome,
-            "CPF": cpf,
-            "Modelo do Carro": carro_modelo,
-            "Versão": carro_versao,
-            "Ano Modelo": carro_anomodelo,
-            "Email": email,
-            "Telefone": telefone
-        }
-        qr_code = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_H,
-            box_size=10,
-            border=4,
-        )
-        qr_code.add_data(qr_data)
-        qr_code.make(fit=True)
-        qr_img = qr_code.make_image(fill_color="black", back_color="white")
-        qr_path = os.path.join("static", "qr_code.png")
-        qr_img.save(qr_path)
+        qr = qrcode.QRCode(version=1, error_correction=qrcode.constants.ERROR_CORRECT_L, box_size=10, border=4)
+        qr.add_data(qr_data)
+        qr.make(fit=True)
+        qr_img = qr.make_image(fill='black', back_color='white')
 
-        background_path = os.path.join("static", "background_image.png")
-        card = Image.open(background_path)
+        card_width, card_height = 800, 400
+        card = Image.new('RGBA', (card_width, card_height), (255, 255, 255, 0))
+
+        try:
+            background = Image.open('static/background.png').convert('RGBA')
+            background = background.resize((card_width, card_height))
+            card.paste(background, (0, 0))
+        except FileNotFoundError:
+            pass
+
         draw = ImageDraw.Draw(card)
-        font_path = os.path.join("static", "arial.ttf")
-        font_size = 20
-        font = ImageFont.truetype(font_path, font_size)
-        header_font = ImageFont.truetype(font_path, font_size + 10)
-        bold_font = ImageFont.truetype(font_path, font_size)
+        font_path = "arial.ttf"
+
+        try:
+            header_font = ImageFont.truetype(font_path, 40)
+            main_font = ImageFont.truetype(font_path, 24)
+            bold_font = ImageFont.truetype(font_path, 24)
+        except IOError:
+            header_font = ImageFont.load_default()
+            main_font = ImageFont.load_default()
+            bold_font = ImageFont.load_default()
 
         header_text = "Carteirinha de Sócio"
-        header_bbox = draw.textbbox((0, 0), header_text, font=header_font)
-        header_width, header_height = header_bbox[2] - header_bbox[0], header_bbox[3] - header_bbox[1]
-        draw.text(((card.width - header_width) / 2, 10), header_text, fill="black", font=header_font)
+        header_width, header_height = draw.textsize(header_text, font=header_font)
+        draw.text(((card_width - header_width) / 2, 20), header_text, font=header_font, fill='black')
 
-        draw.text((50, 50), f"Nome: {nome}", fill="black", font=bold_font)
-        draw.text((50, 100), f"Número do Sócio: {associate_id}", fill="black", font=bold_font)
-        draw.text((50, 150), f"CPF: {cpf}", fill="black", font=font)
-        draw.text((50, 200), f"Modelo do Carro: {carro_modelo}", fill="black", font=font)
-        draw.text((50, 250), f"Versão: {carro_versao}", fill="black", font=font)
-        draw.text((50, 300), f"Ano Modelo: {carro_anomodelo}", fill="black", font=font)
-        draw.text((50, 350), f"Email: {email}", fill="red", font=font)
-        draw.text((50, 400), f"Telefone: {telefone}", fill="red", font=font)
+        info_text = [
+            f"Nome: {associate.get('nome', 'N/A')}",
+            f"Número do Sócio: {associate_id}",
+            f"CPF: {associate.get('cpf', 'N/A')}",
+            f"Modelo do Carro: {associate.get('carro_modelo', 'N/A')}",
+            f"Versão: {associate.get('carro_versao', 'N/A')}",
+            f"Ano Modelo: {associate.get('carro_anomodelo', 'N/A')}",
+            f"Email: {associate.get('email', 'N/A')}",
+            f"Telefone: {associate.get('telefone', 'N/A')}"
+        ]
 
-        qr_code_img = Image.open(qr_path)
-        card.paste(qr_code_img, (600, 300))
+        y_offset = 80
+        for line in info_text:
+            if "Nome" in line or "Número do Sócio" in line:
+                font = bold_font
+            else:
+                font = main_font
+            draw.text((20, y_offset), line, font=font, fill='black' if 'Email' not in line and 'Telefone' not in line else 'red')
+            y_offset += 30
 
-        card_path = os.path.join("static", "carteirinha.png")
-        card.save(card_path)
+        qr_size = 150
+        qr_position = (card_width - qr_size - 20, (card_height - qr_size) // 2)
+        qr_img = qr_img.resize((qr_size, qr_size))
+        card.paste(qr_img, qr_position, qr_img.convert('RGBA'))
 
-        return send_file(card_path, mimetype='image/png')
+        card_io = BytesIO()
+        card.save(card_io, 'PNG')
+        card_io.seek(0)
 
-    except requests.exceptions.RequestException as e:
-        return f"Error fetching data: {e}", 500
+        return send_file(card_io, mimetype='image/png')
+
     except Exception as e:
-        return f"Error generating card: {e}", 500
+        return f"Error generating card: {str(e)}", 500
 
 if __name__ == '__main__':
     app.run(debug=True)
