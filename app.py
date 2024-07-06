@@ -51,6 +51,9 @@ def carteirinha(associate_id):
             qr.save(qr_io, 'PNG')
             qr_io.seek(0)
 
+            # Certifique-se de que a pasta static exista
+            os.makedirs(app.static_folder, exist_ok=True)
+
             # Caminho para salvar o QR code
             qr_code_path = os.path.join(app.static_folder, 'qr_code.png')
             with open(qr_code_path, 'wb') as f:
