@@ -2,23 +2,20 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verificação do Associado</title>
 </head>
 <body>
-    <h1>Verificação do Associado</h1>
-    <div id="associate-info">
-        {% if associate %}
-            <p>Nome: {{ associate.nome }}</p>
-            <p>CPF: {{ associate.cpf }}</p>
-            <p>Modelo do Carro: {{ associate.carro_modelo }}</p>
-            <p>Versão: {{ associate.carro_versao }}</p>
-            <p>Ano Modelo: {{ associate.carro_anomodelo }}</p>
-            <p>Email: {{ associate.email }}</p>
-            <p>Telefone: {{ associate.telefone }}</p>
-        {% else %}
-            <p>{{ error }}</p>
-        {% endif %}
-    </div>
+    {% if error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <h1>Verificação do Associado</h1>
+        <p>Nome: {{ associate.name }}</p>
+        <p>CPF: {{ associate.cpf }}</p>
+        <p>Modelo do Carro: {{ associate.car_model }}</p>
+        <p>Versão: {{ associate.car_version }}</p>
+        <p>Ano Modelo: {{ associate.car_year }}</p>
+        <p>Email: {{ associate.email }}</p>
+        <p>Telefone: {{ associate.phone }}</p>
+    {% endif %}
 </body>
 </html>

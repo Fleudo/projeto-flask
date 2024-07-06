@@ -1,21 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carteirinha do Associado</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .card {
+            position: relative;
+            width: 600px;
+            height: 350px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/static/background.png') no-repeat center center;
+            background-size: cover;
+            border-radius: 15px;
+            opacity: 0.2; /* Reduzir a opacidade do background */
+        }
+        .card-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .card-content h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .card-content p {
+            margin: 5px 0;
+            font-size: 16px;
+            color: #555;
+        }
+        .card-content .highlight {
+            font-weight: bold;
+            color: #000; /* Cor preta para o nome */
+        }
+        .card-content .contact-info {
+            color: red;
+        }
+        .qr-code {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 115px; /* Aumentar o tamanho em 15% */
+            height: 115px; /* Aumentar o tamanho em 15% */
+        }
+    </style>
 </head>
 <body>
-    {% if associate %}
-        <h1>Carteirinha do Associado</h1>
-        <p><strong>Nome:</strong> {{ associate.name }}</p>
-        <p><strong>CPF:</strong> {{ associate.cpf }}</p>
-        <p><strong>Modelo do Carro:</strong> {{ associate.car_model }}</p>
-        <p><strong>Versão:</strong> {{ associate.car_version }}</p>
-        <p><strong>Ano Modelo:</strong> {{ associate.car_year }}</p>
-        <p><strong>Email:</strong> {{ associate.email }}</p>
-        <p><strong>Telefone:</strong> {{ associate.phone }}</p>
-        <img src="data:image/png;base64,{{ qr_img }}" alt="QR Code">
-    {% else %}
-        <p>{{ error }}</p>
-    {% endif %}
+    <div class="card">
+        <div class="background"></div>
+        <div class="card-content">
+            <h1>Carteirinha do Associado</h1>
+            <p class="highlight">Nome: {{ associate.nome }}</p>
+            <p>Número do Sócio: {{ associate.id }}</p>
+            <p>CPF: {{ associate.cpf }}</p>
+            <p>Modelo do Carro: {{ associate.carro_modelo }}</p>
+            <p>Versão: {{ associate.carro_versao }}</p>
+            <p>Ano Modelo: {{ associate.carro_anomodelo }}</p>
+            <p class="contact-info">Email: {{ associate.email }}</p>
+            <p class="contact-info">Telefone: {{ associate.telefone }}</p>
+            <img src="{{ qr_code_url }}" alt="QR Code" class="qr-code">
+        </div>
+    </div>
 </body>
 </html>
