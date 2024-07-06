@@ -53,7 +53,9 @@ def carteirinha(id):
         header_font_size = 36
         header_font = ImageFont.truetype(bold_font_path, header_font_size)
         header_text = "Carteirinha de Sócio"
-        header_width, header_height = draw.textsize(header_text, font=header_font)
+        header_bbox = draw.textbbox((0, 0), header_text, font=header_font)
+        header_width = header_bbox[2] - header_bbox[0]
+        header_height = header_bbox[3] - header_bbox[1]
         draw.text(
             ((card_width - header_width) / 2, 20),
             header_text,
@@ -89,8 +91,12 @@ def carteirinha(id):
         email_text = f"Email: {associate.get('email', 'N/A')}"
         telefone_text = f"Telefone: {associate.get('telefone', 'N/A')}"
         
-        email_width, email_height = draw.textsize(email_text, font=font)
-        telefone_width, telefone_height = draw.textsize(telefone_text, font=font)
+        email_bbox = draw.textbbox((0, 0), email_text, font=font)
+        telefone_bbox = draw.textbbox((0, 0), telefone_text, font=font)
+        email_width = email_bbox[2] - email_bbox[0]
+        email_height = email_bbox[3] - email_bbox[1]
+        telefone_width = telefone_bbox[2] - telefone_bbox[0]
+        telefone_height = telefone_bbox[3] - telefone_bbox[1]
 
         draw.text((50, card_height - email_height - 20), email_text, font=font, fill="red")
         draw.text((card_width - telefone_width - 50, card_height - telefone_height - 20), telefone_text, font=font, fill="red")
