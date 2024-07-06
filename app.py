@@ -45,16 +45,21 @@ def carteirinha(associate_id):
     associate = fetch_associate_by_id(token, associate_id)
     if associate:
         try:
-            qr_data = f"Nome: {associate['attributes'].get('name', 'N/A')}\nCPF: {associate['attributes'].get('cpf', 'N/A')}\nModelo do Carro: {associate['attributes'].get('car_model', 'N/A')}\nVersão: {associate['attributes'].get('car_version', 'N/A')}\nAno Modelo: {associate['attributes'].get('car_year_model', 'N/A')}\nEmail: {associate['attributes'].get('email', 'N/A')}\nTelefone: {associate['attributes'].get('phone', 'N/A')}"
+            qr_data = (
+                f"Nome: {associate['attributes'].get('name', 'N/A')}\n"
+                f"CPF: {associate['attributes'].get('cpf', 'N/A')}\n"
+                f"Modelo do Carro: {associate['attributes'].get('car_model', 'N/A')}\n"
+                f"Versão: {associate['attributes'].get('car_version', 'N/A')}\n"
+                f"Ano Modelo: {associate['attributes'].get('car_year_model', 'N/A')}\n"
+                f"Email: {associate['attributes'].get('email', 'N/A')}\n"
+                f"Telefone: {associate['attributes'].get('phone', 'N/A')}"
+            )
             qr = qrcode.make(qr_data)
             qr_io = BytesIO()
             qr.save(qr_io, 'PNG')
             qr_io.seek(0)
 
-            # Certifique-se de que a pasta static exista
             os.makedirs(app.static_folder, exist_ok=True)
-
-            # Caminho para salvar o QR code
             qr_code_path = os.path.join(app.static_folder, 'qr_code.png')
             with open(qr_code_path, 'wb') as f:
                 f.write(qr_io.getvalue())
