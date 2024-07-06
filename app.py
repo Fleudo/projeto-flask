@@ -52,9 +52,14 @@ def carteirinha(id):
         draw = ImageDraw.Draw(card)
 
         # Carregar fontes
-        font_path = "arial.ttf"  # Certifique-se de que o arquivo da fonte está disponível
-        header_font = ImageFont.truetype(font_path, 40)
-        text_font = ImageFont.truetype(font_path, 20)
+        try:
+            font_path = "arial.ttf"  # Certifique-se de que o arquivo da fonte está disponível
+            header_font = ImageFont.truetype(font_path, 40)
+            text_font = ImageFont.truetype(font_path, 20)
+        except IOError:
+            # Fallback para uma fonte padrão caso a fonte especificada não esteja disponível
+            header_font = ImageFont.load_default()
+            text_font = ImageFont.load_default()
 
         # Adicionar cabeçalho
         header_text = "Carteirinha de Sócio"
