@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verificação do Associado</title>
 </head>
 <body>
-    <h1>Verificação do Associado</h1>
-    {% if associate %}
+    {% if error %}
+        <p>{{ error }}</p>
+    {% else %}
+        <h1>Verificação do Associado</h1>
         <p>Nome: {{ associate.name }}</p>
         <p>CPF: {{ associate.cpf }}</p>
         <p>Modelo do Carro: {{ associate.car_model }}</p>
@@ -15,9 +16,6 @@
         <p>Ano Modelo: {{ associate.car_year }}</p>
         <p>Email: {{ associate.email }}</p>
         <p>Telefone: {{ associate.phone }}</p>
-        <img src="{{ url_for('static', filename='qr.png') }}" alt="QR Code">
-    {% elif error %}
-        <p>{{ error }}</p>
     {% endif %}
 </body>
 </html>
