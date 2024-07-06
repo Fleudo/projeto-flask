@@ -4,28 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carteirinha do Associado</title>
-    <style>
-        .carteirinha {
-            border: 2px solid #000;
-            padding: 20px;
-            width: 300px;
-            text-align: center;
-        }
-        .carteirinha img {
-            margin-top: 20px;
-        }
-    </style>
 </head>
 <body>
-    <div class="carteirinha">
-        <h1>{{ associate.name }}</h1>
-        <p><strong>CPF:</strong> {{ associate.cpf }}</p>
-        <p><strong>Modelo do Carro:</strong> {{ associate.car_model }}</p>
-        <p><strong>Versão:</strong> {{ associate.car_version }}</p>
-        <p><strong>Ano Modelo:</strong> {{ associate.car_year_model }}</p>
-        <p><strong>Email:</strong> {{ associate.email }}</p>
-        <p><strong>Telefone:</strong> {{ associate.phone }}</p>
-        <img src="{{ qr_code_url }}" alt="QR Code">
-    </div>
+    <h1>Carteirinha do Associado</h1>
+    <p>Nome: {{ associate.name }}</p>
+    <p>CPF: {{ associate.cpf }}</p>
+    <p>Modelo do Carro: {{ associate.car_model }}</p>
+    <p>Versão: {{ associate.car_version }}</p>
+    <p>Ano Modelo: {{ associate.car_year_model }}</p>
+    <p>Email: {{ associate.email }}</p>
+    <p>Telefone: {{ associate.phone }}</p>
+    <img src="{{ qr_code_url }}" alt="QR Code">
 </body>
 </html>
