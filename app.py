@@ -45,14 +45,15 @@ def carteirinha(associate_id):
     associate = fetch_associate_by_id(token, associate_id)
     if associate:
         try:
+            attributes = associate['attributes']
             qr_data = (
-                f"Nome: {associate['attributes'].get('name', 'N/A')}\n"
-                f"CPF: {associate['attributes'].get('cpf', 'N/A')}\n"
-                f"Modelo do Carro: {associate['attributes'].get('car_model', 'N/A')}\n"
-                f"Versão: {associate['attributes'].get('car_version', 'N/A')}\n"
-                f"Ano Modelo: {associate['attributes'].get('car_year_model', 'N/A')}\n"
-                f"Email: {associate['attributes'].get('email', 'N/A')}\n"
-                f"Telefone: {associate['attributes'].get('phone', 'N/A')}"
+                f"Nome: {attributes.get('name', 'N/A')}\n"
+                f"CPF: {attributes.get('cpf', 'N/A')}\n"
+                f"Modelo do Carro: {attributes.get('car_model', 'N/A')}\n"
+                f"Versão: {attributes.get('car_version', 'N/A')}\n"
+                f"Ano Modelo: {attributes.get('car_year_model', 'N/A')}\n"
+                f"Email: {attributes.get('email', 'N/A')}\n"
+                f"Telefone: {attributes.get('phone', 'N/A')}"
             )
             qr = qrcode.make(qr_data)
             qr_io = BytesIO()
@@ -65,7 +66,7 @@ def carteirinha(associate_id):
                 f.write(qr_io.getvalue())
 
             qr_code_url = url_for('static', filename='qr_code.png')
-            return render_template('carteirinha.html', associate=associate['attributes'], qr_code_url=qr_code_url)
+            return render_template('carteirinha.html', associate=attributes, qr_code_url=qr_code_url)
         except Exception as e:
             print(f"Error generating QR code or rendering template: {e}")
             return "Internal Server Error", 500
