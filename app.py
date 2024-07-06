@@ -4,15 +4,25 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import requests
 import json
+import os
 
 app = Flask(__name__)
+
+# Carregar variáveis de ambiente
+from dotenv import load_dotenv
+load_dotenv()
+
+API_URL = "https://api.gwmcarclub.com.br/api/associates"
+API_TOKEN = os.getenv('API_TOKEN')
 
 @app.route('/carteirinha/<int:associate_id>', methods=['GET'])
 def carteirinha(associate_id):
     try:
-        response = requests.get(f'https://api.example.com/associates/{associate_id}')
+        # Fazendo a solicitação à API
+        headers = {'Authorization': f'Bearer {API_TOKEN}'}
+        response = requests.get(f'{API_URL}/{associate_id}', headers=headers)
         response_data = response.json()
-        
+
         if response.status_code != 200 or 'data' not in response_data:
             return "Erro ao obter dados do associado", 404
 
@@ -80,15 +90,15 @@ def carteirinha(associate_id):
             y_offset += 30
 
         qr_size = 150
-        qr_position = (card_width - qr_size - 20, (card_height - qr_size) // 2)
         qr_img = qr_img.resize((qr_size, qr_size))
-        card.paste(qr_img, qr_position, qr_img.convert('RGBA'))
+        card.paste(qr_img, (card_width - qr_size - 20, card_height - qr_size - 20))
 
-        card_io = BytesIO()
-        card.save(card_io, 'PNG')
-        card_io.seek(0)
+        # Salvar a carteirinha como imagem
+        card_path = 'static/carteirinha.png'
+        card.save(card_path)
 
-        return send_file(card_io, mimetype='image/png')
+        # Retornar a carteirinha como resposta
+        return send_file(card_path, mimetype='image/png')
 
     except Exception as e:
         return f"Error generating card: {str(e)}", 500
