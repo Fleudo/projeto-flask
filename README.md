@@ -1,147 +1,92 @@
-# projeto-flask# Aplicativo Flask para Verificação de Associados
+Aqui está o README atualizado para o seu projeto no GitHub:
 
-Este aplicativo Flask permite a verificação de associados em uma base de dados remota via uma API REST. Ele utiliza Flask para a interface web e se integra com uma API para buscar informações dos associados.
+---
 
-## Requisitos
+# Projeto Flask Carteirinha de Sócio
 
-- Python 3.8 ou superior
-- pip (gerenciador de pacotes do Python)
-- Conta no GitHub
-- Conta no Render.com para deploy
-
-## Dependências
-
-Crie um arquivo `requirements.txt` com o seguinte conteúdo:
-
-```
-Flask
-requests
-gunicorn
-python-dotenv
-```
+Este projeto Flask gera carteirinhas de sócios com QRCode. A aplicação busca dados de um endpoint, gera uma imagem de carteirinha com um background customizado, insere os dados do sócio e adiciona um QRCode com informações em JSON.
 
 ## Estrutura do Projeto
 
 ```
 Projeto/
-│
-├── app.py
-├── requirements.txt
-├── Procfile
+├── static/
+│   ├── Arial.ttf
+│   ├── Arial-Bold.ttf
+│   ├── background.png
+│   ├── qr_code.png
+│   └── carteirinha_<id>.png
+├── templates/
 ├── .env
-└── templates/
-    └── index.html
+├── .gitignore
+├── Procfile
+├── app.py
+└── requirements.txt
 ```
 
-## Arquivos
+## Requisitos
 
-### `app.py`
+- Python 3.8+
+- Flask
+- Pillow
+- Requests
+- qrcode
 
-```python
-from flask import Flask, request, jsonify, render_template
-import requests
-import os
-from dotenv import load_dotenv
+## Instalação
 
-load_dotenv()
+1. Clone o repositório:
 
-app = Flask(__name__)
-
-data_url = "https://api.gwmcarclub.com.br/api/associates"
-
-def fetch_associate_by_id(token, associate_id):
-    headers = {
-        'Authorization': f'Bearer {token}',
-        'Content-Type': 'application/json'
-    }
-    response = requests.get(f"{data_url}/{associate_id}", headers=headers)
-    
-    if response.status_code == 200:
-        try:
-            data = response.json()
-            if 'data' in data:
-                return data['data']
-            else:
-                return None
-        except ValueError:
-            return None
-    else:
-        return None
-
-@app.route('/verify/<int:associate_id>', methods=['GET'])
-def verify(associate_id):
-    token = os.getenv("API_TOKEN")
-    associate = fetch_associate_by_id(token, associate_id)
-    if associate:
-        return render_template('index.html', associate=associate['attributes'])
-    else:
-        return render_template('index.html', error='Pessoa inexistente na base de dados do clube')
-
-if __name__ == '__main__':
-    app.run(debug=True)
+```sh
+git clone https://github.com/SeuUsuario/projeto-flask.git
+cd projeto-flask
 ```
 
-### `requirements.txt`
+2. Crie um ambiente virtual:
 
-```
-Flask
-requests
-gunicorn
-python-dotenv
-```
-
-### `Procfile`
-
-```
-web: gunicorn app:app
+```sh
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate  # Windows
 ```
 
-### `.env`
+3. Instale as dependências:
 
-```
-API_TOKEN=seu-token-aqui
-```
-
-### `templates/index.html`
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verificação do Associado</title>
-</head>
-<body>
-    <h1>Verificação do Associado</h1>
-    {% if associate %}
-        <p>Nome: {{ associate.nome }}</p>
-        <p>CPF: {{ associate.cpf }}</p>
-        <p>Modelo do Carro: {{ associate.carro_modelo }}</p>
-        <p>Versão: {{ associate.carro_versao }}</p>
-        <p>Ano Modelo: {{ associate.carro_anomodelo }}</p>
-        <p>Email: {{ associate.email }}</p>
-        <p>Telefone: {{ associate.telefone }}</p>
-    {% else %}
-        <p>{{ error }}</p>
-    {% endif %}
-</body>
-</html>
+```sh
+pip install -r requirements.txt
 ```
 
-## Executando o Aplicativo Localmente
+4. Adicione seu `API_TOKEN` no arquivo `.env`.
 
-1. Clone o repositório.
-2. Navegue até o diretório do projeto.
-3. Instale as dependências: `pip install -r requirements.txt`
-4. Execute o aplicativo: `flask run`
+## Executando a Aplicação
 
-## Deploy no Render.com
+1. Inicie o servidor Flask:
 
-1. Conecte sua conta do GitHub ao Render.com.
-2. Crie um novo projeto e selecione o repositório do GitHub.
-3. Defina as variáveis de ambiente conforme o arquivo `.env`.
-4. Configure o build e o start command: `pip install -r requirements.txt` e `gunicorn app:app`.
-5. Deploy o aplicativo.
+```sh
+flask run
+```
 
-Esta documentação cobre a configuração e implantação básica do aplicativo Flask para verificação de associados. Para mais detalhes sobre Flask ou sobre como personalizar seu aplicativo, consulte a [documentação do Flask](https://flask.palletsprojects.com/).
+2. Acesse `http://127.0.0.1:5000/carteirinha/<id>` no navegador, onde `<id>` é o ID de um associado.
+
+## Deploy no Render
+
+1. Faça login no [Render](https://render.com/).
+2. Crie um novo serviço web e conecte-o ao seu repositório GitHub.
+3. Adicione as variáveis de ambiente no Render:
+    - `API_TOKEN`: Seu token da API.
+4. Inicie o deploy.
+
+## Contribuição
+
+1. Fork o repositório.
+2. Crie um branch para sua feature (`git checkout -b feature/fooBar`).
+3. Commit suas mudanças (`git commit -am 'Add some fooBar'`).
+4. Push para o branch (`git push origin feature/fooBar`).
+5. Crie um novo Pull Request.
+
+## Licença
+
+Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
+
+---
+
+Atualize as URLs e outros detalhes conforme necessário.
