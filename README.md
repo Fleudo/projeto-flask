@@ -86,6 +86,7 @@ flask run
 ## Licença
 
 Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
+Projeto e execução by LEUDO
 
 ---
 
